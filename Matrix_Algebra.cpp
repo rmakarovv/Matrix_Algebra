@@ -2,7 +2,7 @@
  * Implementation of Matrices storage, operations on matrices. 
  * Jacobi, Seidel's method, least square approximation. 
  * Implemented process of solving an equation Ax = b.
- * @author Roman Makarov, github.com/rmakarovv.
+ * @author Roman Makarov, github.com/rmakarovv
  */
 
 #include <iostream>
