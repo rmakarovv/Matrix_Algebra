@@ -1,6 +1,6 @@
 /**
- * Implementation of Matrices storage, operations on matrices. 
- * Jacobi, Seidel's method, least square approximation. 
+ * Implementation of Matrices storage, operations on matrices.
+ * Jacobi, Seidel's method, least square approximation.
  * Implemented process of solving an equation Ax = b.
  * @author Roman Makarov, github.com/rmakarovv
  */
@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <vector>
 #include <cmath>
-using namespace std;
 
 /**
  * The class for representing matrices
@@ -31,52 +30,63 @@ public:
     double determinant() {
         double result = 1;
         int step = 1;
-        string previousStep = "None";
+        std::string previousStep = "None";
+
         for (int i = 0; i < n; i++) {
-            int pivotRow = i; double pivot = M[i][i];
+            int pivotRow = i;
+            double pivot = M[i][i];
+
             for (int j = i + 1; j < n; ++j) {
-                if (abs(M[j][i]) > abs(pivot)) {
+                if (std::abs(M[j][i]) > std::abs(pivot)) {
                     pivot = M[j][i];
                     pivotRow = j;
                 }
             }
-            if (pivot == 0.0) return 0;
-            else result *= pivot;
+
+            if (pivot == 0.0) {
+                return 0;
+            } else {
+                result *= pivot;
+            }
+
             if (pivotRow != i) {
                 result *= -1;
                 previousStep = "permutation";
-                swap(M[i], M[pivotRow]);
+                std::swap(M[i], M[pivotRow]);
                 pivotRow = i;
             }
 
-            for (int row = pivotRow + 1; row < n; row++) {
+            for (int row = pivotRow + 1; row < n; ++row) {
                 if (M[row][pivotRow] != 0){
                     previousStep = "elimination";
                     step++;
                     double diff = M[row][pivotRow] / pivot;
-                    for (int del = 0; del < n; del++) {
+
+                    for (int del = 0; del < n; ++del) {
                         M[row][del] -= diff * M[pivotRow][del];
                     }
                 }
             }
         }
+
         return result;
     }
     /*
      * Overloading '>>' operator.
      */
-    friend istream & operator>>(istream&  is, Matrix& Matrix) {
+    friend std::istream& operator >> (std::istream& is, Matrix& Matrix) {
         for (int i = 0; i < Matrix.n; i++) {
             for (int j = 0; j < Matrix.m; j++)
                 is >> Matrix.M[i][j];
         }
+
         return is;
     }
 
     /*
      * Overloading '<<' operator.
      */
-    friend ostream& operator<< (std::ostream& out, const Matrix& A) {
+    friend std::ostream& operator << (std::ostream& out, const Matrix& A) {
         for (int i = 0; i < A.n; i++) {
             for (int j = 0; j < A.m; j++) {
                 out << A.M[i][j];
@@ -85,64 +95,72 @@ public:
             }
             out << "\n";
         }
+
         return out;
     }
 
     /*
      * Overloading '=' operator.
      */
-    Matrix& operator=(const Matrix& Matrix) {
+    Matrix& operator = (const Matrix& Matrix) {
         n = Matrix.n;
         m = Matrix.m;
+
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++)
                 M[i][j] = Matrix.M[i][j];
         }
+
         return *this;
     }
 
     /*
      * Overloading '+' operator.
      */
-    Matrix operator+(const Matrix& B) {
+    Matrix operator + (const Matrix& B) {
         if (m != B.m || n != B.n){
-            cout << "Error: the dimensional problem occurred\n";
+            std::cout << "Error: the dimensional problem occurred\n";
         } else {
             Matrix D(n, m);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m; j++)
                     D.M[i][j] = M[i][j] + B.M[i][j];
             }
+
             return D;
         }
+
         return Matrix(0, 0);
     }
 
     /*
      * Overloading '-' operator.
      */
-    Matrix operator-(const Matrix& A) {
+    Matrix operator - (const Matrix& A) {
         if (m != A.m || n != A.n){
-            cout << "Error: the dimensional problem occurred\n";
+            std::cout << "Error: the dimensional problem occurred\n";
         } else {
             Matrix E(n, m);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m; j++)
                     E.M[i][j] = M[i][j] - A.M[i][j];
             }
+
             return E;
         }
+
         return Matrix(0, 0);
     }
 
     /*
      * Overloading '*' operator.
      */
-    Matrix operator*(const Matrix& A) {
+    Matrix operator * (const Matrix& A) {
         if (this->m != A.n) {
-            cout << "Error: the dimensional problem occurred\n";
+            std::cout << "Error: the dimensional problem occurred\n";
         } else {
             Matrix F(this->n, A.m);
+
             for (int i = 0; i < this->n; i++) {
                 for (int j = 0; j < A.m; j++) {
                     F.M[i][j] = 0;
@@ -150,8 +168,10 @@ public:
                         F.M[i][j] += M[i][k] * A.M[k][j];
                 }
             }
+
             return F;
         }
+
         return Matrix(0, 0);
     }
 
@@ -165,6 +185,7 @@ public:
                 G.M[i][j] = M[j][i];
             }
         }
+
         return G;
     }
 
@@ -192,8 +213,8 @@ public:
     void makeMatrixPermutation(int swap1, int swap2, const Matrix &toSwap) {
         swap1--; swap2--;
         makeMatrixIdentity();
-        swap(M[swap2][swap1], M[swap1][swap1]);
-        swap(M[swap2][swap2], M[swap1][swap2]);
+        std::swap(M[swap2][swap1], M[swap1][swap1]);
+        std::swap(M[swap2][swap2], M[swap1][swap2]);
     }
 };
 
@@ -219,6 +240,7 @@ class IdentityMatrix : public SquareMatrix {
 public:
     int n;
     int M[100][100] = {};
+
     IdentityMatrix(int number) : SquareMatrix(number) {
         n = number;
         makeMatrixIdentity();
@@ -272,7 +294,7 @@ public:
     /*
      * Overloading '>>' operator.
      */
-    friend istream & operator>>(istream&  is, ColumnVector &columnVector) {
+    friend std::istream & operator >> (std::istream&  is, ColumnVector &columnVector) {
         for (int i = 0; i < columnVector.n; ++i) {
             is >> columnVector.cv[i];
         }
@@ -282,7 +304,7 @@ public:
     /*
      * Overloading '<<' operator.
      */
-    friend ostream& operator<< (std::ostream& out, const ColumnVector &columnVector) {
+    friend std::ostream& operator << (std::ostream& out, const ColumnVector &columnVector) {
         for (int i = 0; i < columnVector.n; ++i) {
             out << columnVector.cv[i] << "\n";
         }
@@ -297,11 +319,13 @@ public:
  */
 Matrix inverseMatrix(const Matrix &A) {
     Matrix augmented(A.n, A.m * 2);
+
     for (int i = 0; i < A.n; ++i) {
         for (int j = 0; j < A.m; ++j) {
             augmented.M[i][j] = A.M[i][j];
         }
     }
+
     for (int i = 0; i < A.n; ++i) {
         for (int j = A.m; j < A.m * 2; ++j) {
             if (i == j - A.m)
@@ -309,12 +333,13 @@ Matrix inverseMatrix(const Matrix &A) {
             else augmented.M[i][j] = 0;
         }
     }
-    int step = 0;
-    step++;
+
+    int step = 1;
+
     for (int i = 0; i < augmented.n; i++) {
         int pivotRow = i; double pivot = augmented.M[i][i];
         for (int j = i + 1; j < augmented.n; ++j) {
-            if (abs(augmented.M[j][i]) > abs(pivot)) {
+            if (std::abs(augmented.M[j][i]) > std::abs(pivot)) {
                 pivot = augmented.M[j][i];
                 pivotRow = j;
             }
@@ -322,7 +347,7 @@ Matrix inverseMatrix(const Matrix &A) {
 
         if (pivotRow != i) {
             step++;
-            swap(augmented.M[i], augmented.M[pivotRow]);
+            std::swap(augmented.M[i], augmented.M[pivotRow]);
             pivotRow = i;
         }
 
@@ -338,10 +363,12 @@ Matrix inverseMatrix(const Matrix &A) {
     }
     for (int i = augmented.n - 1; i >= 0; i--) {
         double pivot = augmented.M[i][i];
+
         for (int j = i - 1; j >= 0; j--) {
             if (augmented.M[j][i] != 0) {
                 step++;
                 double difference = augmented.M[j][i] / pivot;
+
                 for (int k = 0; k < augmented.m; k++){
                     augmented.M[j][k] -= difference * augmented.M[i][k];
                 }
@@ -351,10 +378,14 @@ Matrix inverseMatrix(const Matrix &A) {
 
     for (int row = 0; row < augmented.n; ++row) {
         double coef = 1.0;
-        if (augmented.M[row][row] != 0)
+
+        if (augmented.M[row][row] != 0) {
             coef = 1.0 / augmented.M[row][row];
-        for (int col = 0; col < augmented.m; ++col)
+        }
+
+        for (int col = 0; col < augmented.m; ++col) {
             augmented.M[row][col] *= coef;
+        }
     }
 
 
@@ -364,6 +395,7 @@ Matrix inverseMatrix(const Matrix &A) {
             inverse.M[row][col] = augmented.M[row][col + augmented.n];
         }
     }
+
     return inverse;
 }
 
@@ -371,7 +403,7 @@ Matrix inverseMatrix(const Matrix &A) {
 /**
  * The process of solving equations Ax = b, with return value x.
  */
-vector<double> solve(const Matrix &A, ColumnVector &columnVector) {
+std::vector<double> solve(const Matrix &A, ColumnVector &columnVector) {
     // Solving equation Ax = b
     Matrix augmented(A.n, A.m + 1);
     for (int i = 0; i < A.n; ++i) {
@@ -379,15 +411,17 @@ vector<double> solve(const Matrix &A, ColumnVector &columnVector) {
             augmented.M[i][j] = A.M[i][j];
         }
     }
+
     for (int i = 0; i < A.n; ++i) {
         augmented.M[i][A.m] = columnVector.cv[i];
     }
-    int step = 0;
-    step++;
+
+    int step = 1;
+
     for (int i = 0; i < augmented.n; i++) {
         int pivotRow = i; double pivot = augmented.M[i][i];
         for (int j = i + 1; j < augmented.n; ++j) {
-            if (abs(augmented.M[j][i]) > abs(pivot)) {
+            if (std::abs(augmented.M[j][i]) > std::abs(pivot)) {
                 pivot = augmented.M[j][i];
                 pivotRow = j;
             }
@@ -395,26 +429,30 @@ vector<double> solve(const Matrix &A, ColumnVector &columnVector) {
 
         if (pivotRow != i) {
             step++;
-            swap(augmented.M[i], augmented.M[pivotRow]);
+            std::swap(augmented.M[i], augmented.M[pivotRow]);
             pivotRow = i;
         }
 
         for (int row = pivotRow + 1; row < augmented.n; row++) {
-            if (abs(augmented.M[row][pivotRow]) > 0.001) {
+            if (std::abs(augmented.M[row][pivotRow]) > 0.001) {
                 step++;
                 double diff = augmented.M[row][pivotRow] / pivot;
+
                 for (int del = 0; del < augmented.m; del++) {
                     augmented.M[row][del] -= diff * augmented.M[pivotRow][del];
                 }
             }
         }
     }
+
     for (int i = augmented.n - 1; i >= 0; i--) {
         double pivot = augmented.M[i][i];
+
         for (int j = i - 1; j >= 0; j--) {
-            if (abs(augmented.M[j][i]) > 0.001) {
+            if (std::abs(augmented.M[j][i]) > 0.001) {
                 step++;
                 double difference = augmented.M[j][i] / pivot;
+
                 for (int k = 0; k < augmented.m; k++) {
                     augmented.M[j][k] -= difference * augmented.M[i][k];
                 }
@@ -425,15 +463,18 @@ vector<double> solve(const Matrix &A, ColumnVector &columnVector) {
     // Diagonal normalization
     for (int row = 0; row < augmented.n; ++row) {
         double coef = 1;
-        if (augmented.M[row][row] != 0)
+
+        if (augmented.M[row][row] != 0) {
             coef = 1 / augmented.M[row][row];
-        for (int col = 0; col < augmented.m; ++col)
+        }
+        for (int col = 0; col < augmented.m; ++col) {
             augmented.M[row][col] *= coef;
+        }
     }
 
 
     // Constructing a solution.
-    vector<double> solutionX;
+    std::vector<double> solutionX;
     for (int i = 0; i < A.n; ++i) {
         solutionX.push_back(augmented.M[i][A.m]);
     }
@@ -446,27 +487,29 @@ vector<double> solve(const Matrix &A, ColumnVector &columnVector) {
  */
 void Jacobi() {
     int sizeAn;
-    cin >> sizeAn;
+    std::cin >> sizeAn;
     SquareMatrix A(sizeAn);
-    cin >> A;
+    std::cin >> A;
 
     int sizeB;
-    cin >> sizeB;
+    std::cin >> sizeB;
     Matrix B(sizeB, 1);
-    cin >> B;
+    std::cin >> B;
 
     double e;
-    cin >> e;
+    std::cin >> e;
 
     bool isApplicable = true;
 
     for (int i = 0; i < sizeAn; ++i) {
         double aii = abs(A.M[i][i]);
         double sum = 0;
+
         for (int j = 0; j < sizeAn; ++j) {
             if (i != j)
                 sum += abs(A.M[i][j]);
         }
+
         if (sum >= aii)
             isApplicable = false;
     }
@@ -483,20 +526,19 @@ void Jacobi() {
 
         Matrix beta = inverseMatrix(D) * B;
 
-        cout << "alpha:\n";
-        cout << fixed << setprecision(4) << alpha;
+        std::cout << "alpha:\n";
+        std::cout << std::fixed << std::setprecision(4) << alpha;
 
-        cout << "beta:\n";
-        cout << fixed << setprecision(4) << beta;
+        std::cout << "beta:\n";
+        std::cout << std::fixed << std::setprecision(4) << beta;
 
         int step = 0;
 
         Matrix xprev(alpha.n, 1);
         xprev = beta;
 
-        cout << "x(" << step << "):\n";
-        step++;
-        cout << fixed << setprecision(4) << xprev;
+        std::cout << "x(" << step++ << "):\n";
+        std::cout << std::fixed << std::setprecision(4) << xprev;
 
         Matrix xcur(alpha.n, 1);
         xcur = beta;
@@ -511,15 +553,14 @@ void Jacobi() {
             }
             curE = sqrt(curE);
 
-            cout << "e: ";
-            cout << fixed << setprecision(4) << curE << "\n";
+            std::cout << "e: ";
+            std::cout << std::fixed << std::setprecision(4) << curE << "\n";
 
-            cout << "x(" << step << "):\n";
-            step++;
-            cout << fixed << setprecision(4) << xcur;
+            std::cout << "x(" << step++ << "):\n";
+            std::cout << std::fixed << std::setprecision(4) << xcur;
         }
     } else {
-        cout << "The method is not applicable!\n";
+        std::cout << "The method is not applicable!\n";
     }
 }
 
@@ -529,27 +570,29 @@ void Jacobi() {
  */
 void Seidel() {
     int sizeAn;
-    cin >> sizeAn;
+    std::cin >> sizeAn;
     SquareMatrix A(sizeAn);
-    cin >> A;
+    std::cin >> A;
 
     int sizeb;
-    cin >> sizeb;
+    std::cin >> sizeb;
     Matrix b(sizeb, 1);
-    cin >> b;
+    std::cin >> b;
 
     double e;
-    cin >> e;
+    std::cin >> e;
 
     bool isApplicable = true;
 
     for (int i = 0; i < sizeAn; ++i) {
         double aii = abs(A.M[i][i]);
         double sum = 0;
+
         for (int j = 0; j < sizeAn; ++j) {
             if (i != j)
                 sum += abs(A.M[i][j]);
         }
+
         if (sum >= aii)
             isApplicable = false;
     }
@@ -566,11 +609,11 @@ void Seidel() {
 
         Matrix beta = inverseMatrix(D) * b;
 
-        cout << "beta:\n";
-        cout << fixed << setprecision(4) << beta;
+        std::cout << "beta:\n";
+        std::cout << std::fixed << std::setprecision(4) << beta;
 
-        cout << "alpha:\n";
-        cout << fixed << setprecision(4) << alpha;
+        std::cout << "alpha:\n";
+        std::cout << std::fixed << std::setprecision(4) << alpha;
 
         int step = 0;
 
@@ -583,8 +626,9 @@ void Seidel() {
                     B.M[i][j] = 0;
             }
         }
-        cout << "B:\n";
-        cout << fixed << setprecision(4) << B;
+
+        std::cout << "B:\n";
+        std::cout << std::fixed << std::setprecision(4) << B;
 
         SquareMatrix C(sizeAn);
         for (int i = 0; i < sizeAn; ++i) {
@@ -595,23 +639,23 @@ void Seidel() {
                     C.M[i][j] = 0;
             }
         }
-        cout << "C:\n";
-        cout << fixed << setprecision(4) << C;
+
+        std::cout << "C:\n";
+        std::cout << std::fixed << std::setprecision(4) << C;
 
         Matrix IB = I - B;
-        cout << "I-B:\n";
-        cout << fixed << setprecision(4) << IB;
+        std::cout << "I-B:\n";
+        std::cout << std::fixed << std::setprecision(4) << IB;
 
-        cout << "(I-B)_-1:\n";
         Matrix IB_1 = inverseMatrix(IB);
-        cout << fixed << setprecision(4) << IB_1;
+        std::cout << "(I-B)_-1:\n";
+        std::cout << std::fixed << std::setprecision(4) << IB_1;
 
         Matrix xprev(alpha.n, 1);
         xprev = beta;
 
-        cout << "x(" << step << "):\n";
-        step++;
-        cout << fixed << setprecision(4) << xprev;
+        std::cout << "x(" << step++ << "):\n";
+        std::cout << std::fixed << std::setprecision(4) << xprev;
 
         Matrix xcur(alpha.n, 1);
         xcur = beta;
@@ -626,15 +670,14 @@ void Seidel() {
             }
             curE = sqrt(curE);
 
-            cout << "e: ";
-            cout << fixed << setprecision(4) << curE << "\n";
+            std::cout << "e: ";
+            std::cout << std::fixed << std::setprecision(4) << curE << "\n";
 
-            cout << "x(" << step << "):\n";
-            step++;
-            cout << fixed << setprecision(4) << xcur;
+            std::cout << "x(" << step++ << "):\n";
+            std::cout << std::fixed << std::setprecision(4) << xcur;
         }
     } else {
-        cout << "The method is not applicable!\n";
+        std::cout << "The method is not applicable!\n";
     }
 }
 
@@ -644,21 +687,27 @@ void Seidel() {
  */
 void LeastSquareApproximation() {
     int m;
-    cin >> m;
-    vector<double> input;
-    vector<double> b;
+    std::cin >> m;
+
+    std::vector<double> input;
+    std::vector<double> b;
     for (int i = 0; i < m; ++i) {
         double in;
-        cin >> in;
+        std::cin >> in;
+
         input.push_back(in);
-        cin >> in;
+
+        std::cin >> in;
         b.push_back(in);
     }
-    int n; cin >> n;
+
+    int n;
+    std::cin >> n;
+
     int sizeInRows = m, sizeInColumns;
     sizeInColumns = 2 + (n - 1);
-    Matrix A(sizeInRows, sizeInColumns);
 
+    Matrix A(sizeInRows, sizeInColumns);
     for (int i = 0; i < sizeInColumns; ++i) {
         for (int j = 0; j < sizeInRows; ++j)
             i == 0 ? A.M[j][i] = 1 : A.M[j][i] = pow(input[j], i);
@@ -677,6 +726,11 @@ void LeastSquareApproximation() {
     Matrix A_Tb = A_T * B;
 
     Matrix A_TA1_b = A_TA1 * A_Tb;
-    cout << "x~:\n";
-    cout << fixed << setprecision(4) << A_TA1_b;
+    std::cout << "x~:\n";
+    std::cout << std::fixed << std::setprecision(4) << A_TA1_b;
+}
+
+int main() {
+
+    return (0-0);
 }
