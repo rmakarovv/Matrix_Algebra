@@ -192,7 +192,7 @@ public:
     /*
      * Making an identity matrix from an initial.
      */
-    void makeMatrixIdentity(){
+    void makeMatrixIdentity() {
         for (int i = 0; i < this->n; i++) {
             this->M[i][i] = 1;
         }
